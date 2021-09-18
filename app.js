@@ -1,19 +1,35 @@
-const phrases = ["Muhammed", "Rasil", "Keethadath", "man a drag", "joe mama"];
+const phrases = [
+	"May the Force be with you",
+	"To infinity and beyond",
+	"I am the one who knocks",
+	"I demand a trial by combat",
+	"We are Groot",
+	"This world shall know pain",
+	"Beam me up Scotty",
+	"You Shall Not Pass",
+];
 
+const usedPhrase = [];
+
+let playerScore = 0;
+let wrongGuesses = 0;
 const overlay = document.getElementById("overlay");
+const keyboard = document.getElementById("qwerty");
+const buttons = document.getElementsByTagName("button");
+const score = document.getElementsByClassName("score")[0];
 const playBtn = document.getElementsByClassName("btn__reset")[0];
 const phraseContainer = document.getElementById("phrase").firstElementChild;
-const keyboard = document.getElementById("qwerty");
 const scoreboard = document.getElementById("scoreboard").firstElementChild;
-let wrongGuesses = 0;
 
-function gameStart() {
+// This function starts the game
+function startGame() {
 	overlay.style.display = "none";
 	const phrase = phraseRandomizer().toUpperCase();
-	phraseCharContainerCreator(phrase);
+	addPhraseToDisplay(phrase);
 }
 
-function nextRound() {
+// This function reverts all the changes made during a round
+function newGame() {
 	phraseContainer.innerHTML = "";
 	wrongGuesses = 0;
 	const liList = scoreboard.querySelectorAll("li");
@@ -21,20 +37,24 @@ function nextRound() {
 		const img = li.firstElementChild;
 		img.src = "images/liveHeart.png";
 	}
-	const buttonList = document.querySelectorAll("button");
-	for (let button of buttonList) {
+	for (let button of buttons) {
 		button.removeAttribute("disabled");
 		button.classList.remove("chosen");
 	}
-	gameStart();
+	startGame();
 }
 
+// This function returns a rendom phrase from the phrases array
 function phraseRandomizer() {
 	const index = Math.floor(Math.random() * (phrases.length - 1 - 0 + 1)) + 0;
-	return phrases[index];
+	const phrase = phrases[index];
+	phrases.splice(index, 1);
+	usedPhrase.push(phrase);
+	return phrase;
 }
 
-function phraseCharContainerCreator(phrase) {
+// This function appends phrase to the display
+function addPhraseToDisplay(phrase) {
 	const phraseArr = Array.from(phrase);
 	for (let char of phraseArr) {
 		const item = createLi(char);
@@ -43,6 +63,7 @@ function phraseCharContainerCreator(phrase) {
 	return;
 }
 
+// This function creates li elements and returns it
 function createLi(char) {
 	if (char === " ") {
 		return createElement("li", "classList", "space");
@@ -54,12 +75,14 @@ function createLi(char) {
 	}
 }
 
+// This function creates elements based on the parameters supplied
 function createElement(element, property, value) {
 	const item = document.createElement(element);
 	item[property] = value;
 	return item;
 }
 
+// This function validates the pressed buttons
 function validatePressedBtn(pressedChar) {
 	const listOfLi = phraseContainer.children;
 	let charsCorrect = 0;
@@ -72,11 +95,12 @@ function validatePressedBtn(pressedChar) {
 			}
 		}
 	}
-	if (!charsCorrect) removeHeart();
-	checkIfGuessedCorrectly();
+	if (!charsCorrect) removeLife();
+	checkForWin();
 }
 
-function removeHeart() {
+// This function removes a heart when a wrong button is pressed
+function removeLife() {
 	const li = scoreboard.querySelectorAll("li")[wrongGuesses];
 	const img = li.firstElementChild;
 	if ((img.src = "images/liveHeart.png")) {
@@ -87,13 +111,18 @@ function removeHeart() {
 	return;
 }
 
-function checkIfGuessedCorrectly() {
+// This function checks if the player has guessed the phrase correctly
+function checkForWin() {
 	const numberOfLi = phraseContainer.querySelectorAll(".letter").length;
 	const numberOfLiShow = document.querySelectorAll(".show").length;
-	if (numberOfLi === numberOfLiShow) gameWon();
+	if (numberOfLi === numberOfLiShow)
+		setTimeout(() => {
+			gameWon();
+		}, 500);
 	else return;
 }
 
+// This function displays the 'win' overlay
 function gameWon() {
 	const h2 = overlay.firstElementChild;
 	const a = overlay.lastElementChild;
@@ -102,9 +131,11 @@ function gameWon() {
 	h2.textContent = "You won";
 	a.textContent = "Play Again";
 	a.id = "";
+	updatePlayerScore("add");
 	return;
 }
 
+// This function displays the 'lose overlay'
 function gameOver() {
 	const h2 = overlay.firstElementChild;
 	const a = overlay.lastElementChild;
@@ -113,20 +144,35 @@ function gameOver() {
 	h2.textContent = "You lose";
 	a.textContent = "Retry";
 	a.id = "";
+	updatePlayerScore("reset");
 	return;
 }
 
+// This function updates the score counter
+function updatePlayerScore(type) {
+	playerScore = playerScoreCalculator(type);
+	score.textContent = playerScore;
+}
+
+// This function calculates the current score
+function playerScoreCalculator(type) {
+	if (type === "add") return playerScore + 1;
+	else return 0;
+}
+
+// Listens for click events on the overlay anchor tags (buttons)
 playBtn.addEventListener("click", (event) => {
 	const btn = event.target;
 	const action = btn.textContent;
 	if (action === "Start Game") {
-		gameStart();
+		startGame();
 	}
 	if (action === "Play Again" || action === "Retry") {
-		nextRound();
+		newGame();
 	}
 });
 
+// Listens for click events on the qwerty container (keyboard)
 keyboard.addEventListener("click", (event) => {
 	const pressedBtn = event.target;
 	if (pressedBtn.tagName === "BUTTON") {
@@ -134,5 +180,21 @@ keyboard.addEventListener("click", (event) => {
 		pressedBtn.disabled = true;
 		pressedBtn.classList.add("chosen");
 		validatePressedBtn(pressedChar.toUpperCase());
+	}
+});
+
+// Listens for keydown events on the page
+document.addEventListener("keydown", (event) => {
+	const pressedChar = event.key;
+	loop: for (let i = 0; i < buttons.length; i++) {
+		const pressedBtn = buttons[i];
+		const isNotDisabled = !pressedBtn.disabled;
+		const char = pressedBtn.textContent;
+		if (pressedChar === char && isNotDisabled) {
+			pressedBtn.disabled = true;
+			pressedBtn.classList.add("chosen");
+			validatePressedBtn(pressedChar.toUpperCase());
+			break loop;
+		}
 	}
 });

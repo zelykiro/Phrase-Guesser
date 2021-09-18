@@ -88,6 +88,11 @@ button {
 	color: transparent;
 	background: var(--color-neutral-light);
 	border-radius: 5px;
+	margin-bottom: 8px;
+}
+
+.letter span {
+	user-select: none;
 }
 
 .space {
@@ -136,6 +141,13 @@ button {
 	border-radius: 5px;
 }
 
+.current_score {
+	position: absolute;
+	right: 20px;
+	bottom: 40px;
+	color: black;
+}
+
 .title {
 	color: #fff;
 }
@@ -162,4 +174,16 @@ button {
 
 .lose a {
 	color: var(--color-lose);
+}
+/* Footer */
+
+#scoreboard {
+	display: flex;
+	flex-direction: column;
+}
+
+#scoreboard ol,
+#scoreboard h3 {
+	margin-left: auto;
+	margin-right: auto;
 }
