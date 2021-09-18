@@ -25,7 +25,7 @@ Keep in mind the phrases include quotes and sayings from popular anime, movies, 
 - [ ] Audio for different user actions
 - [ ] Cheat protection
 
-### Build With
+### Built With
 
 - Vanilla JavaScript 
   - [*MDN page for JavaScrpt*](https://www.javascript.com/)
