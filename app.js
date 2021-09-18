@@ -33,13 +33,13 @@ function newGame() {
 	phraseContainer.innerHTML = "";
 	wrongGuesses = 0;
 	const liList = scoreboard.querySelectorAll("li");
+	for (let button of buttons) {
+		button.removeAttribute("disabled");
+		button.removeAttribute("class");
+	}
 	for (let li of liList) {
 		const img = li.firstElementChild;
 		img.src = "images/liveHeart.png";
-	}
-	for (let button of buttons) {
-		button.removeAttribute("disabled");
-		button.classList.remove("chosen");
 	}
 	startGame();
 }
@@ -82,8 +82,14 @@ function createElement(element, property, value) {
 	return item;
 }
 
+// This function modifies the pressed button
+function modifyPressedBtn(pressedBtn, pressedChar) {
+	pressedBtn.disabled = true;
+	validatePressedBtn(pressedChar.toUpperCase(), pressedBtn);
+}
+
 // This function validates the pressed buttons
-function validatePressedBtn(pressedChar) {
+function validatePressedBtn(pressedChar, pressedBtn) {
 	const listOfLi = phraseContainer.children;
 	let charsCorrect = 0;
 	for (let li of listOfLi) {
@@ -92,15 +98,21 @@ function validatePressedBtn(pressedChar) {
 			if (char && pressedChar === char) {
 				li.classList.add("show");
 				charsCorrect++;
+				li.classList.add("move");
+				setTimeout(() => {
+					li.classList.remove("move");
+				}, 500);
 			}
 		}
 	}
-	if (!charsCorrect) removeLife();
+	if (!charsCorrect) removeLife(pressedBtn);
+	else pressedBtn.classList.add("correct");
 	checkForWin();
 }
 
 // This function removes a heart when a wrong button is pressed
-function removeLife() {
+function removeLife(pressedBtn) {
+	pressedBtn.classList.add("wrong");
 	const li = scoreboard.querySelectorAll("li")[wrongGuesses];
 	const img = li.firstElementChild;
 	if ((img.src = "images/liveHeart.png")) {
@@ -118,33 +130,41 @@ function checkForWin() {
 	if (numberOfLi === numberOfLiShow)
 		setTimeout(() => {
 			gameWon();
-		}, 500);
+		}, 1100);
 	else return;
 }
 
 // This function displays the 'win' overlay
 function gameWon() {
-	const h2 = overlay.firstElementChild;
-	const a = overlay.lastElementChild;
-	overlay.className = "win";
-	overlay.style.display = "";
-	h2.textContent = "You won";
-	a.textContent = "Play Again";
-	a.id = "";
-	updatePlayerScore("add");
+	modifyOverlay("win", "You won", "Play Again", " ", "add");
 	return;
 }
 
 // This function displays the 'lose overlay'
 function gameOver() {
+	modifyOverlay(
+		"lose",
+		"You lose",
+		"Retry",
+		`Hint: The phrases are quotes/sayings from popular
+	anime/movie/tv-series.`,
+		"reset"
+	);
+	return;
+}
+
+// This function modifies the overlay based on the parameters
+function modifyOverlay(classname, h2text, atext, h4text, arg) {
 	const h2 = overlay.firstElementChild;
 	const a = overlay.lastElementChild;
-	overlay.className = "lose";
+	const h4 = overlay.children[1];
+	overlay.className = classname;
 	overlay.style.display = "";
-	h2.textContent = "You lose";
-	a.textContent = "Retry";
+	h2.textContent = h2text;
+	a.textContent = atext;
 	a.id = "";
-	updatePlayerScore("reset");
+	h4.textContent = h4text;
+	updatePlayerScore(arg);
 	return;
 }
 
@@ -177,23 +197,19 @@ keyboard.addEventListener("click", (event) => {
 	const pressedBtn = event.target;
 	if (pressedBtn.tagName === "BUTTON") {
 		const pressedChar = pressedBtn.textContent;
-		pressedBtn.disabled = true;
-		pressedBtn.classList.add("chosen");
-		validatePressedBtn(pressedChar.toUpperCase());
+		modifyPressedBtn(pressedBtn, pressedChar);
 	}
 });
 
 // Listens for keydown events on the page
 document.addEventListener("keydown", (event) => {
-	const pressedChar = event.key;
+	const pressedChar = event.key.toLowerCase();
 	loop: for (let i = 0; i < buttons.length; i++) {
 		const pressedBtn = buttons[i];
 		const isNotDisabled = !pressedBtn.disabled;
 		const char = pressedBtn.textContent;
 		if (pressedChar === char && isNotDisabled) {
-			pressedBtn.disabled = true;
-			pressedBtn.classList.add("chosen");
-			validatePressedBtn(pressedChar.toUpperCase());
+			modifyPressedBtn(pressedBtn, pressedChar);
 			break loop;
 		}
 	}

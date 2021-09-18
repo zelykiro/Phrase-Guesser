@@ -44,6 +44,12 @@ h2 {
 	margin: 0;
 }
 
+h4 {
+	margin: 0;
+	font-family: "Open Sans", sans-serif;
+	color: rgba(2, 7, 49, 0.521);
+}
+
 button {
 	margin: 6px;
 	border: 1px solid transparent;
@@ -79,6 +85,11 @@ button {
 
 /* Phrase */
 
+li {
+	transform: scale(1);
+	transition: transform 0.5s cubic-bezier(0.75, -0.4, 0.3, 1.52);
+}
+
 .letter {
 	font-size: var(--font-size-medium);
 	height: 65px;
@@ -104,6 +115,10 @@ button {
 	background-color: #76ce82;
 }
 
+.move {
+	transform: scale(0.7);
+}
+
 /* Keyboard */
 
 .keyrow {
@@ -111,11 +126,19 @@ button {
 	justify-content: center;
 }
 
-.chosen {
-	background: var(--color-neutral);
+.correct,
+.wrong {
 	border-radius: 5px;
 	font-size: var(--font-size-medium);
 	color: #ffffff;
+}
+
+.correct {
+	background: var(--color-win);
+}
+
+.wrong {
+	background: var(--color-lose);
 }
 
 .btn__reset {
@@ -139,13 +162,7 @@ button {
 	left: 0;
 	right: 0;
 	border-radius: 5px;
-}
-
-.current_score {
-	position: absolute;
-	right: 20px;
-	bottom: 40px;
-	color: black;
+	z-index: 1;
 }
 
 .title {
