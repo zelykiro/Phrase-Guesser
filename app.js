@@ -115,10 +115,8 @@ function removeLife(pressedBtn) {
 	pressedBtn.classList.add("wrong");
 	const li = scoreboard.querySelectorAll("li")[wrongGuesses];
 	const img = li.firstElementChild;
-	if ((img.src = "images/liveHeart.png")) {
-		img.src = "images/lostHeart.png";
-		wrongGuesses++;
-	}
+	img.src = "images/lostHeart.png";
+	wrongGuesses++;
 	if (wrongGuesses === 5) gameOver();
 	return;
 }
