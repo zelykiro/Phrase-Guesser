@@ -28,7 +28,7 @@ Keep in mind the phrases include quotes and sayings from popular anime, movies, 
 
 ### Goal of the project
 
-- To create a browser version of “Wheel of Success”, a word guessing game
+- To build a browser version of “Wheel of Success”, a word guessing game
 - To put JavaScript DOM manipulation methods into practice
 
 ### Built With
