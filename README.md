@@ -1,6 +1,4 @@
-# Project Title
-
-Phrase-Guesser game
+# Phrase-Guesser game
 
 ## How To Play
 
